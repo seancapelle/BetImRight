@@ -1,0 +1,203 @@
+<!-- Page Content -->
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">
+                    <img src="./img/test-logo.jpg" alt="Bet I'm Right Logo" id="bir-logo">
+                </h1>
+            </div>
+        </div>
+        <!-- /.row -->
+
+        <!-- Projects Row -->
+        <div class="row">
+            <div class="col-md-12">
+
+            <h2 id="createH2">Create your Bet I'm Right Account</h2>
+
+                <form class="signup-box">
+
+                    <span class="signup-span">
+                        <label for="firstName" class="signup-label">First Name</label>
+                        <input type="text" name="firstName" id="firstName" class="signup-form" maxlength="20" autocomplete="off" required >
+                    </span>
+                    <br>
+                    <span class="signup-span">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" name="lastName" id="lastName" class="signup-form" maxlength="20" autocomplete="off" required >
+                    </span>
+                    <br>
+                    <span class="signup-span">
+                        <label for="newUsername">Username</label>
+                        <input type="text" name="newUsername" id="newUsername" class="signup-form" maxlength="20" autocomplete="off" required >
+                    </span>
+                    <br>
+                    <span class="signup-span">
+                        <label for="newPassword">Password</label>
+                        <input type="password" name="newPassword" id="newPassword" class="signup-form" maxlength="20" autocomplete="off" required >
+                    </span>
+                    <br>
+                    <span class="signup-span">
+                        <label for="passwordAgain">Confirm Password</label>
+                        <input type="password" name="passwordAgain" id="passwordAgain" class="signup-form" maxlength="20" autocomplete="off" required >
+                    </span>
+                    <br>
+                    <span class="signup-span">
+                        <label for="newEmail">Email</label>
+                        <input type="email" name="newEmail" id="newEmail" class="signup-form" maxlength="40" autocomplete="off" required >
+                    </span>
+                    <br>
+                    <button class ="btn-primary" id="signup-btn">Create Account</button>
+                    <br>
+
+                </form>
+
+                <p id="loginP">Already have an Account? Login <a href="/login">here!</a></p>
+
+            </div>
+        </div>
+        <!-- /.row -->
+
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p> About Us | Careers | Contact Us | Support</p>
+                    <p>Copyright &copy; 2016 Bet I'm Right </p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+        <!-- Modal for form completion -->
+        <div id="formCompleteModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Please fill out all parts of the form!</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal for unique username -->
+        <div id="uniqueUsernameModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">That username is already taken, please choose another.</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal for password match -->
+        <div id="passwordMatchModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Your passwords do not match. Please make sure your passwords match completely</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+    <!-- /.container -->
+
+    <script>
+    // define createAccount function
+    function createAccount(){
+
+        console.log("createAccount func")
+
+        // grab data from form
+        var data = {
+            firstName: $('#firstName').val().trim(),
+            lastName: $('#lastName').val().trim(),
+            newUsername: $('#newUsername').val().trim(),
+            newPassword: $('#newPassword').val().trim(),
+            newEmail: $('#newEmail').val().trim()
+        }
+
+        //console.log(data)
+        // grab url to ajax call
+        var currentURL = window.location.origin + "/createUser/create";
+
+        console.log(currentURL);
+
+        // post our new user
+        $.post(currentURL, data, function(results){
+            console.log(results);
+            
+            //If the username was unique, redirect to login page on server side 
+
+            if(results === false) {
+                $('#uniqueUsernameModal').modal();
+            }
+        });
+    }
+    
+    //Function to validate if the form is completely filled out
+    function validateForm() {
+
+        var isValid = true;
+        $('.signup-form').each(function() {
+
+            if ( $(this).val() === '' ){
+                isValid = false;
+            }
+        });
+        return isValid;
+    }
+
+    //Function to check if the passwords entered match
+    function bothPasswordsMatch() {
+
+        var isMatch = false;
+
+        if ($("#newPassword").val() === $("#passwordAgain").val()){
+            isMatch = true;
+        }
+        return isMatch;
+    }
+
+    // define call on button
+    $(document).on('click', '#signup-btn', function(){
+
+        var isValid = validateForm();
+
+        if (isValid) {
+            console.log("Form complete");
+            
+            var isMatch = bothPasswordsMatch();
+
+            if(!isMatch) {
+                //alert("Your passwords do not match. Please make sure your passwords match completely");
+                $('#passwordMatchModal').modal();
+
+            } else {
+                createAccount();
+                console.log("account created");
+            }  
+
+        } else {
+            //alert("Please fill out all parts of the form");
+            $('#formCompleteModal').modal();
+        }
+
+        // prevent default behavior
+        return false;
+    })
+    </script>

@@ -11,16 +11,43 @@ var bets = {
 			callback(res);
 		});
 	},
+	insertBet:  function(cols, vals, callback) {
+		orm.insertOne('bets', cols, vals, function(res){
+			callback(res);
+		});
+	},
 	update: function(objColVals, condition, callback) {
 		orm.updateOne('users', objColVals, condition, function(res){
 			callback(res);
 		});
 	},
-	userAuth: function(callback) {
-		orm.userAuth('users', function(res){
+	userAuth: function(table, callback) {
+		orm.userAuth(table, function(res){
+			callback(res);
+		});
+
+	},
+	userData: function(table, callback) {
+		orm.userAuth(table, function(res){
 			callback(res);
 		});
 	}
+	commBets: function(callback) {
+		orm.selectAll('bets', function(res){
+			
+			var community = {
+				bets: []
+			};
+
+			for (var i = 0; i < bets.length; i++){
+				if (bets.judge == "community" && bets.result == null){
+					community.bets.push(bets.bet_text);	
+				}
+			}
+			callback(community);
+		});
+	}	
+
 };
 
 module.exports = bets;
