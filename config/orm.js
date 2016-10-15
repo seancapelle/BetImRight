@@ -65,12 +65,12 @@ var orm = {
     },
 	
 	userAuth: function(table, callback) {
-        var queryString = 'SELECT `' + table + '`.`username`,`' + table + '`.`password`, `' + table + '`.`admin` FROM `bets_db`.`' + table + '`;';
+        var queryString = 'SELECT `' + table + '`.`user_id`,`' + table + '`.`username`,`' + table + '`.`password`, `' + table + '`.`admin` FROM `bets_db`.`' + table + '`;';
         connection.query(queryString, function(err, result) {
             if (err) throw err;
             callback(result);
         });
-    }
+    },
 
 	userData: function(table, callback) {
         var queryString = 'SELECT `' + table + '`.`username`,`' + table + '`.`user_id`, `' + table + '`.`current_points` FROM `bets_db`.`' + table + '`;';
@@ -78,7 +78,115 @@ var orm = {
             if (err) throw err;
             callback(result);
         });
-  }
+  },
+
+	betData: function(table, callback) {
+        var queryString = 'SELECT `' + table + '`.`bet_id`,`' + table + '`.`judge`,`' + table + '`.`create_date`,`' + table + '`.`result` FROM `bets_db`.`' + table + '`;';
+        connection.query(queryString, function(err, result) {
+            if (err) throw err;
+            callback(result);
+        });
+  },
+
+  betJudge: function(table, callback) {
+        var queryString = 'SELECT `' + table + '`.`bet_id`,`' + table + '`.`p1_id`,`' + table + '`.`bet_amount`,`' + table +'`.`p2_id` FROM `bets_db`.`' + table + '`;';
+        connection.query(queryString, function(err, result) {
+            if (err) throw err;
+            callback(result);
+        });
+  },
+
+  betCommunity: function(table, callback) {
+        var queryString = 'SELECT `' + table + '`.`bet_id`,`' + table +'`.`voter_pick` FROM `bets_db`.`' + table + '`;';
+        connection.query(queryString, function(err, result) {
+            if (err) throw err;
+            callback(result);
+        });
+  },
+
+  selectNegativeJoin: function(valOfCol, callback) {
+        var queryString = "SELECT * FROM bets WHERE bets.judge='community' AND bets.result IS NULL AND NOT EXISTS (SELECT * FROM votes WHERE votes.bet_id = bets.bet_id AND votes.voter_id=" + valOfCol + ")";
+        //console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhere: function(tableInput, colToSearch, valOfCol, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ?';
+        // console.log(queryString);
+
+        connection.query(queryString, [valOfCol], function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhereOr: function(tableInput, colToSearch, colToSearch2, valOfCol, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ' + valOfCol + ' OR ' + colToSearch2 + ' = ' + valOfCol;
+        // console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhereAnd: function(tableInput, colToSearch, valOfCol, colToSearch2, valOfCol2, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ' + valOfCol + ' AND ' + colToSearch2 + ' = ' + valOfCol2;
+        // console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhereAndNull: function(tableInput, colToSearch, valOfCol, colToSearch2, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ' + valOfCol + ' AND ' + colToSearch2 + ' IS NULL';
+        //console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhereAndAndNull: function(tableInput, colToSearch, valOfCol, valOfCol2, colToSearch2, colToSearch3, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE ' + colToSearch + ' = ' + valOfCol + ' AND ' + colToSearch2 + ' = ' + valOfCol2  + ' AND ' + colToSearch3 + ' IS NULL';
+        //console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhereOrAndAndNull: function(tableInput, colToSearch, valOfCol, colToSearch2, valOfCol2, colToSearch3, valOfCol3, colToSearch4, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE (' + colToSearch + ' = ' + valOfCol + ' OR ' + colToSearch2 + ' = ' + valOfCol2 + ') AND ' + colToSearch3 + ' = ' + valOfCol3  + ' AND ' + colToSearch4 + ' IS NULL';
+        //console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    },
+
+  selectWhereOrAndNotNull: function(tableInput, colToSearch, valOfCol, colToSearch2, valOfCol2, colToSearch3, callback) {
+        var queryString = 'SELECT * FROM ' + tableInput + ' WHERE (' + colToSearch + ' = ' + valOfCol + ' OR ' + colToSearch2 + ' = ' + valOfCol2 + ') AND ' + colToSearch3 + ' IS NOT NULL';
+        //console.log(queryString);
+
+        connection.query(queryString, function(err, result) {
+            callback(result)
+        });
+
+    }
+
+
+
+
 
 
 };
